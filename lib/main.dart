@@ -5,9 +5,12 @@ import 'package:instagram/features/auth/Register.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:instagram/firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 

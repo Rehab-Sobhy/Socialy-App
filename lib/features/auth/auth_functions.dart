@@ -8,6 +8,8 @@ class Auth {
       {required emaill,
       required passwordd,
       required name,
+      required imagename,
+      required imagepath,
       required title}) async {
     try {
       final credential =
@@ -15,31 +17,20 @@ class Auth {
         email: emaill,
         password: passwordd,
       );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
+      print("Register only");
 
-    UsersData userdata =
-        UsersData(password: passwordd, email: emaill, name: name, title: title);
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('usersdoc');
+      CollectionReference users =
+          FirebaseFirestore.instance.collection("usersdoc");
+      UsersData userdata = UsersData(
+          password: passwordd, email: emaill, name: name, title: title);
 
-    Future<void> addUser() {
-      // Call the user's CollectionReference to add a new user
-      return users
-          .add({
-            userdata.ToMap(),
-          })
+      users
+          .doc(credential.user!.uid)
+          .set(userdata.ToMap())
           .then((value) => print("User Added"))
           .catchError((error) => print("Failed to add user: $error"));
+    } on FirebaseException catch (e) {
+      print(e.toString());
     }
-
-    print("usera dded to database");
   }
 }

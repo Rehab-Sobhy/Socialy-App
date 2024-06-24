@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/features/auth/Login.dart';
@@ -18,13 +20,15 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
   bool isloading = true;
+  late String imgname;
+  late Uint8List imgpath;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black12,
+          backgroundColor: Colors.grey,
           title: Text(
-            "Sign UP ",
+            "Register ",
             style: Styles.TextStyle20.copyWith(color: Colors.white),
           ),
         ),
@@ -57,10 +61,12 @@ class _RegisterViewState extends State<RegisterView> {
                 height: 20,
               ),
               CustomTextFormField(
+                controller1: namecontroller,
                 hinttext: 'Enter Your  Name',
                 text_Field_Icon: const Icon(Icons.person, color: Colors.white),
               ),
               CustomTextFormField(
+                controller1: tiltecontroller,
                 hinttext: 'Enter Your  title',
                 text_Field_Icon: const Icon(
                   Icons.person,
@@ -68,10 +74,12 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               CustomTextFormField(
+                controller1: emailcontroller,
                 hinttext: 'Enter Your Mail',
                 text_Field_Icon: const Icon(Icons.mail, color: Colors.white),
               ),
               CustomTextFormField(
+                controller1: passwordcontroller,
                 hinttext: 'Enter Strong  Password',
                 text_Field_Icon:
                     const Icon(Icons.visibility, color: Colors.white),
@@ -82,10 +90,13 @@ class _RegisterViewState extends State<RegisterView> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    UserCredential user = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                            email: emailcontroller.text.trim(),
-                            password: passwordcontroller.text.trim());
+                    Auth().register(
+                        emaill: emailcontroller.text,
+                        passwordd: passwordcontroller.text,
+                        name: namecontroller.text,
+                        title: tiltecontroller.text,
+                        imagename: null,
+                        imagepath: null);
 
                     Navigator.push(
                         context,
