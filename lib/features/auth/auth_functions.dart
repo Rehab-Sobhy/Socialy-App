@@ -19,15 +19,17 @@ class Auth {
         password: passwordd,
       );
       print("Register only");
-      geturl(imgname: imagename, imgpath: imgpath);
+
+      String urlll = await geturl(imgname: imagename, imgpath: imgpath);
+
       CollectionReference users =
-          FirebaseFirestore.instance.collection("usersdoc");
+          FirebaseFirestore.instance.collection("users");
       UsersData userdata = UsersData(
           password: passwordd,
           email: emaill,
           name: name,
           title: title,
-          profileimg: geturl(imgname: imagename, imgpath: imgpath));
+          profileimg: urlll);
 
       users
           .doc(credential.user!.uid)

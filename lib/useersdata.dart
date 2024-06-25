@@ -6,12 +6,12 @@ class UsersData {
   String? email;
   String? title;
 
-  Uint8List imgpath;
+  String? profileimg;
 
   UsersData({
     required this.email,
     required this.password,
-    required this.imgpath,
+    required this.profileimg,
     required this.name,
     required this.title,
   });
@@ -22,7 +22,7 @@ class UsersData {
       "password": password,
       "email": email,
       "tilte": title,
-      "imgpath": imgpath,
+      "profileimg": profileimg,
     };
   }
 }

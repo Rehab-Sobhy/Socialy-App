@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram/features/auth/Login.dart';
 import 'package:instagram/features/auth/auth_functions.dart';
+import 'package:instagram/features/home/homepage.dart';
 import 'package:instagram/utils/styles.dart';
 import 'package:instagram/utils/widgets/customtextfield.dart';
 
@@ -24,7 +25,7 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController passwordcontroller = TextEditingController();
   bool isloading = true;
   late String imgname;
-  late File imgpath;
+  File? imgpath;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,7 @@ class _RegisterViewState extends State<RegisterView> {
                         )
                       : ClipOval(
                           child: Image.file(
-                            imgpath,
+                            imgpath!,
                             height: 145,
                             width: 145,
                             fit: BoxFit.cover,
@@ -64,60 +65,87 @@ class _RegisterViewState extends State<RegisterView> {
                       left: 41,
                       child: IconButton(
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.deepOrange,
-                                content: Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: (() async {
-                                        final pickimg1 = await ImagePicker()
-                                            .pickImage(
-                                                source: ImageSource.camera);
-                                        try {
-                                          if (pickimg1 != null) {
-                                            setState(() {
-                                              imgpath = File(pickimg1.path);
-                                            });
-                                          }
-                                        } on Exception catch (e) {
-                                          print("cant Upload image");
-                                        }
-                                      }),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.camera),
-                                          Text("Camera"),
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: (() async {
-                                        final pickimg1 = await ImagePicker()
-                                            .pickImage(
-                                                source: ImageSource.camera);
+                            showModalBottomSheet(
+                                backgroundColor:
+                                    Color.fromARGB(255, 168, 0, 56),
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    height: 100,
+                                    child: Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: (() async {
+                                            final pickimg1 = await ImagePicker()
+                                                .pickImage(
+                                                    source: ImageSource.camera);
+                                            try {
+                                              if (pickimg1 != null) {
+                                                setState(() {
+                                                  imgpath = File(pickimg1.path);
+                                                  Navigator.pop(context);
+                                                });
+                                              }
+                                            } on Exception catch (e) {
+                                              print("cant Upload image");
+                                            }
+                                          }),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Icon(Icons.camera),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              Text(
+                                                "Camera",
+                                                style: Styles.TextStyle16,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        GestureDetector(
+                                          onTap: (() async {
+                                            final pickimg1 = await ImagePicker()
+                                                .pickImage(
+                                                    source:
+                                                        ImageSource.gallery);
 
-                                        try {
-                                          if (pickimg1 != null) {
-                                            setState(() {
-                                              imgpath = File(pickimg1.path);
-                                            });
-                                          }
-                                        } on Exception catch (e) {
-                                          print("cant Upload image");
-                                        }
-                                      }),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.browse_gallery),
-                                          Text("Gallery"),
-                                        ],
-                                      ),
+                                            try {
+                                              if (pickimg1 != null) {
+                                                setState(() {
+                                                  imgpath = File(pickimg1.path);
+                                                  Navigator.pop(context);
+                                                });
+                                              }
+                                            } on Exception catch (e) {
+                                              print("cant Upload image");
+                                            }
+                                          }),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Icon(Icons
+                                                  .browse_gallery_outlined),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              Text("Gallery",
+                                                  style: Styles.TextStyle16),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
+                                  );
+                                });
                           },
                           icon: const Icon(
                             Icons.add_a_photo,
@@ -169,9 +197,9 @@ class _RegisterViewState extends State<RegisterView> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginView()));
+                            builder: (context) => const HomepView()));
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        backgroundColor: Colors.deepOrange,
+                        backgroundColor: Colors.pink,
                         content: Text("Signed up successfully 🥳")));
                   } catch (ex) {
                     // ignore: use_build_context_synchronously
@@ -190,8 +218,7 @@ class _RegisterViewState extends State<RegisterView> {
                   style: Styles.TextStyle16.copyWith(color: Colors.white),
                 ),
                 style: const ButtonStyle(
-                    backgroundColor:
-                        MaterialStatePropertyAll(Colors.pinkAccent)),
+                    backgroundColor: MaterialStatePropertyAll(Colors.pink)),
               ),
               const SizedBox(
                 height: 20,
