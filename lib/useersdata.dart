@@ -5,11 +5,10 @@ class UsersData {
   String? password;
   String? email;
   String? title;
-  String? imgname;
+
   Uint8List imgpath;
 
   UsersData({
-    required this.imgname,
     required this.email,
     required this.password,
     required this.imgpath,
@@ -23,6 +22,7 @@ class UsersData {
       "password": password,
       "email": email,
       "tilte": title,
+      "imgpath": imgpath,
     };
   }
 }

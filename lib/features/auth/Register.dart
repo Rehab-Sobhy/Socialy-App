@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram/features/auth/Login.dart';
 import 'package:instagram/features/auth/auth_functions.dart';
 import 'package:instagram/utils/styles.dart';
@@ -21,7 +24,8 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController passwordcontroller = TextEditingController();
   bool isloading = true;
   late String imgname;
-  late Uint8List imgpath;
+  late File imgpath;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,15 +46,79 @@ class _RegisterViewState extends State<RegisterView> {
               ),
               Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage("assets/images/OIP.jpg"),
-                  ),
+                  imgpath == null
+                      ? const CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage("assets/images/OIP.jpg"),
+                        )
+                      : ClipOval(
+                          child: Image.file(
+                            imgpath,
+                            height: 145,
+                            width: 145,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                   Positioned(
                       bottom: -10,
                       left: 41,
                       child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.deepOrange,
+                                content: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: (() async {
+                                        final pickimg1 = await ImagePicker()
+                                            .pickImage(
+                                                source: ImageSource.camera);
+                                        try {
+                                          if (pickimg1 != null) {
+                                            setState(() {
+                                              imgpath = File(pickimg1.path);
+                                            });
+                                          }
+                                        } on Exception catch (e) {
+                                          print("cant Upload image");
+                                        }
+                                      }),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.camera),
+                                          Text("Camera"),
+                                        ],
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: (() async {
+                                        final pickimg1 = await ImagePicker()
+                                            .pickImage(
+                                                source: ImageSource.camera);
+
+                                        try {
+                                          if (pickimg1 != null) {
+                                            setState(() {
+                                              imgpath = File(pickimg1.path);
+                                            });
+                                          }
+                                        } on Exception catch (e) {
+                                          print("cant Upload image");
+                                        }
+                                      }),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.browse_gallery),
+                                          Text("Gallery"),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(
                             Icons.add_a_photo,
                             color: Colors.white,
@@ -96,7 +164,7 @@ class _RegisterViewState extends State<RegisterView> {
                         name: namecontroller.text,
                         title: tiltecontroller.text,
                         imagename: null,
-                        imagepath: null);
+                        imgpath: imgpath);
 
                     Navigator.push(
                         context,
