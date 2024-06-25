@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:instagram/firebase_services/storage.dart';
 
 import '../../useersdata.dart';
 
@@ -9,7 +10,7 @@ class Auth {
       required passwordd,
       required name,
       required imagename,
-      required imagepath,
+      required imgpath,
       required title}) async {
     try {
       final credential =
@@ -18,11 +19,15 @@ class Auth {
         password: passwordd,
       );
       print("Register only");
-
+      geturl(imgname: imagename, imgpath: imgpath);
       CollectionReference users =
           FirebaseFirestore.instance.collection("usersdoc");
       UsersData userdata = UsersData(
-          password: passwordd, email: emaill, name: name, title: title);
+          password: passwordd,
+          email: emaill,
+          name: name,
+          title: title,
+          profileimg: geturl(imgname: imagename, imgpath: imgpath));
 
       users
           .doc(credential.user!.uid)
