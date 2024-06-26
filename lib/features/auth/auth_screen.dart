@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_instagram_clone/screen/login_screen.dart';
-import 'package:flutter_instagram_clone/screen/signup.dart';
+import 'package:instagram/features/auth/Login.dart';
+import 'package:instagram/features/auth/Register.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
