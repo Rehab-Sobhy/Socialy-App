@@ -6,14 +6,19 @@ class UsersData {
   String? email;
   String? title;
 
-  String? profileimg;
+  final String imageUrl;
+
+  // final List following;
+  // final List follower;
 
   UsersData({
+    //required this.follower,
+    //required this.following,
     required this.email,
     required this.password,
-    required this.profileimg,
     required this.name,
     required this.title,
+    required this.imageUrl,
   });
 
   Map<String, dynamic> ToMap() {
@@ -22,7 +27,7 @@ class UsersData {
       "password": password,
       "email": email,
       "tilte": title,
-      "profileimg": profileimg,
+      "imageUrl": imageUrl,
     };
   }
 }
