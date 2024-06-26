@@ -1,476 +1,206 @@
-// import 'dart:io';
-// import 'dart:typed_data';
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:instagram/features/auth/Login.dart';
-// import 'package:instagram/features/auth/auth_functions.dart';
-// import 'package:instagram/features/home/homepage.dart';
-// import 'package:instagram/utils/styles.dart';
-// import 'package:instagram/utils/widgets/customtextfield.dart';
-
-// class RegisterView extends StatefulWidget {
-//   const RegisterView({super.key});
-
-//   @override
-//   State<RegisterView> createState() => _RegisterViewState();
-// }
-
-// class _RegisterViewState extends State<RegisterView> {
-//   final TextEditingController namecontroller = TextEditingController();
-//   final TextEditingController tiltecontroller = TextEditingController();
-//   final TextEditingController emailcontroller = TextEditingController();
-//   final TextEditingController passwordcontroller = TextEditingController();
-//   bool isloading = true;
-//   late String imgname;
-//   Uint8List? imgpath;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           backgroundColor: Colors.grey,
-//           title: Text(
-//             "Register ",
-//             style: Styles.TextStyle20.copyWith(color: Colors.white),
-//           ),
-//         ),
-//         backgroundColor: Colors.black,
-//         body: SingleChildScrollView(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               const SizedBox(
-//                 height: 50,
-//               ),
-//               Stack(
-//                 children: [
-//                   imgpath == null
-//                       ? const CircleAvatar(
-//                           radius: 40,
-//                           backgroundImage: AssetImage("assets/images/OIP.jpg"),
-//                         )
-//                       : ClipOval(
-//                           child: Image.memory(
-//                             imgpath!,
-//                             height: 145,
-//                             width: 145,
-//                             fit: BoxFit.cover,
-//                           ),
-//                         ),
-//                   Positioned(
-//                       bottom: -10,
-//                       left: 41,
-//                       child: IconButton(
-//                           onPressed: () {
-//                             showModalBottomSheet(
-//                                 backgroundColor:
-//                                     Color.fromARGB(255, 168, 0, 56),
-//                                 context: context,
-//                                 builder: (context) {
-//                                   return Container(
-//                                     height: 100,
-//                                     child: Column(
-//                                       children: [
-//                                         GestureDetector(
-//                                           onTap: (() async {
-//                                             final pickimg1 = await ImagePicker()
-//                                                 .pickImage(
-//                                                     source: ImageSource.camera);
-//                                             try {
-//                                               if (pickimg1 != null) {
-//                                                 setState(() {
-//                                                   imgpath = File(pickimg1.path)
-//                                                       as Uint8List;
-//                                                   Navigator.pop(context);
-//                                                 });
-//                                               }
-//                                             } on Exception catch (e) {
-//                                               print("cant Upload image");
-//                                             }
-//                                           }),
-//                                           child: Row(
-//                                             children: [
-//                                               SizedBox(
-//                                                 width: 5,
-//                                               ),
-//                                               Icon(Icons.camera),
-//                                               SizedBox(
-//                                                 width: 20,
-//                                               ),
-//                                               Text(
-//                                                 "Camera",
-//                                                 style: Styles.TextStyle16,
-//                                               ),
-//                                             ],
-//                                           ),
-//                                         ),
-//                                         SizedBox(
-//                                           height: 30,
-//                                         ),
-//                                         GestureDetector(
-//                                           onTap: (() async {
-//                                             final pickimg1 = await ImagePicker()
-//                                                 .pickImage(
-//                                                     source:
-//                                                         ImageSource.gallery);
-
-//                                             try {
-//                                               if (pickimg1 != null) {
-//                                                 setState(() {
-//                                                   imgpath = File(pickimg1.path)
-//                                                       as Uint8List;
-//                                                   Navigator.pop(context);
-//                                                 });
-//                                               }
-//                                             } on Exception catch (e) {
-//                                               print("cant Upload image");
-//                                             }
-//                                           }),
-//                                           child: Row(
-//                                             children: [
-//                                               SizedBox(
-//                                                 width: 5,
-//                                               ),
-//                                               Icon(Icons
-//                                                   .browse_gallery_outlined),
-//                                               SizedBox(
-//                                                 width: 20,
-//                                               ),
-//                                               Text("Gallery",
-//                                                   style: Styles.TextStyle16),
-//                                             ],
-//                                           ),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   );
-//                                 });
-//                           },
-//                           icon: const Icon(
-//                             Icons.add_a_photo,
-//                             color: Colors.white,
-//                           )))
-//                 ],
-//               ),
-//               const SizedBox(
-//                 height: 20,
-//               ),
-//               CustomTextFormField(
-//                 controller1: namecontroller,
-//                 hinttext: 'Enter Your  Name',
-//                 text_Field_Icon: const Icon(Icons.person, color: Colors.white),
-//               ),
-//               CustomTextFormField(
-//                 controller1: tiltecontroller,
-//                 hinttext: 'Enter Your  title',
-//                 text_Field_Icon: const Icon(
-//                   Icons.person,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               CustomTextFormField(
-//                 controller1: emailcontroller,
-//                 hinttext: 'Enter Your Mail',
-//                 text_Field_Icon: const Icon(Icons.mail, color: Colors.white),
-//               ),
-//               CustomTextFormField(
-//                 controller1: passwordcontroller,
-//                 hinttext: 'Enter Strong  Password',
-//                 text_Field_Icon:
-//                     const Icon(Icons.visibility, color: Colors.white),
-//               ),
-//               const SizedBox(
-//                 height: 20,
-//               ),
-//               ElevatedButton(
-//                 onPressed: () async {
-//                   try {
-//                     Auth().register(
-//                         emaill: emailcontroller.text,
-//                         passwordd: passwordcontroller.text,
-//                         name: namecontroller.text,
-//                         title: tiltecontroller.text,
-//                         imagename: null,
-//                         profileImage: imgpath);
-
-//                     Navigator.push(
-//                         context,
-//                         MaterialPageRoute(
-//                             builder: (context) => const HomepView()));
-//                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-//                         backgroundColor: Colors.pink,
-//                         content: Text("Signed up successfully 🥳")));
-//                   } catch (ex) {
-//                     // ignore: use_build_context_synchronously
-//                     print(ex.toString());
-//                     showDialog(
-//                         context: context,
-//                         builder: (BuildContextcontext) {
-//                           return const AlertDialog(
-//                             content: Text("Error 😔,Try again"),
-//                           );
-//                         });
-//                   }
-//                 },
-//                 child: Text(
-//                   isloading == false ? "loading" : "Register",
-//                   style: Styles.TextStyle16.copyWith(color: Colors.white),
-//                 ),
-//                 style: const ButtonStyle(
-//                     backgroundColor: MaterialStatePropertyAll(Colors.pink)),
-//               ),
-//               const SizedBox(
-//                 height: 20,
-//               ),
-//               TextButton(
-//                   onPressed: () {
-//                     Navigator.push(context,
-//                         MaterialPageRoute(builder: ((context) => LoginView())));
-//                   },
-//                   child: Text(
-//                     " Have an account ? Login Now 👉",
-//                     style: Styles.TextStyle14.copyWith(color: Colors.white),
-//                   )),
-//             ],
-//           ),
-//         ));
-//   }
-// }
-
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram/features/auth/Login.dart';
-import 'package:instagram/features/auth/auth_functions.dart';
-import 'package:instagram/features/home/homepage.dart';
-import 'package:instagram/utils/styles.dart';
-import 'package:instagram/utils/widgets/customtextfield.dart';
+import 'package:instagram/utils/util/dialog.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+import 'package:instagram/utils/util/exeption.dart';
+import 'package:instagram/utils/util/imagepicker.dart';
+
+import '../../data/firebase_service/firebase_auth.dart';
+
+class SignupScreen extends StatefulWidget {
+  final VoidCallback show;
+  SignupScreen(this.show, {super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
-  final TextEditingController namecontroller = TextEditingController();
-  final TextEditingController tiltecontroller = TextEditingController();
-  final TextEditingController emailcontroller = TextEditingController();
-  final TextEditingController passwordcontroller = TextEditingController();
-  bool isloading = false;
-  String? imgname;
-  Uint8List? imgpath;
-
+class _SignupScreenState extends State<SignupScreen> {
+  final email = TextEditingController();
+  FocusNode email_F = FocusNode();
+  final password = TextEditingController();
+  FocusNode password_F = FocusNode();
+  final passwordConfirme = TextEditingController();
+  FocusNode passwordConfirme_F = FocusNode();
+  final username = TextEditingController();
+  FocusNode username_F = FocusNode();
+  final bio = TextEditingController();
+  FocusNode bio_F = FocusNode();
+  File? _imageFile;
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    email.dispose();
+    password.dispose();
+    passwordConfirme.dispose();
+    username.dispose();
+    bio.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey,
-        title: Text(
-          "Register ",
-          style: Styles.TextStyle20.copyWith(color: Colors.white),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(width: 96, height: 10),
+            Center(
+              child: Image.asset('images/logo.jpg'),
+            ),
+            SizedBox(width: 96, height: 70),
+            InkWell(
+              onTap: () async {
+                File _imagefilee = await ImagePickerr().uploadImage('gallery');
+                setState(() {
+                  _imageFile = _imagefilee;
+                });
+              },
+              child: CircleAvatar(
+                radius: 36,
+                backgroundColor: Colors.grey,
+                child: _imageFile == null
+                    ? CircleAvatar(
+                        radius: 34,
+                        backgroundImage: AssetImage('images/person.png'),
+                        backgroundColor: Colors.grey.shade200,
+                      )
+                    : CircleAvatar(
+                        radius: 34,
+                        backgroundImage: Image.file(
+                          _imageFile!,
+                          fit: BoxFit.cover,
+                        ).image,
+                        backgroundColor: Colors.grey.shade200,
+                      ),
+              ),
+            ),
+            SizedBox(height: 40),
+            Textfild(email, email_F, 'Email', Icons.email),
+            SizedBox(height: 15),
+            Textfild(username, username_F, 'username', Icons.person),
+            SizedBox(height: 15),
+            Textfild(bio, bio_F, 'bio', Icons.abc),
+            SizedBox(height: 15),
+            Textfild(password, password_F, 'Password', Icons.lock),
+            SizedBox(height: 15),
+            Textfild(passwordConfirme, passwordConfirme_F, 'PasswordConfirme',
+                Icons.lock),
+            SizedBox(height: 15),
+            Signup(),
+            SizedBox(height: 15),
+            Have()
+          ],
         ),
       ),
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 50),
-            Stack(
-              children: [
-                imgpath == null
-                    ? const CircleAvatar(
-                        radius: 40,
-                        backgroundImage: AssetImage("assets/images/OIP.jpg"),
-                      )
-                    : ClipOval(
-                        child: Image.memory(
-                          imgpath!,
-                          height: 145,
-                          width: 145,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                Positioned(
-                  bottom: -10,
-                  left: 41,
-                  child: IconButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        backgroundColor: const Color.fromARGB(255, 168, 0, 56),
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 100,
-                            child: Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    final pickimg1 = await ImagePicker()
-                                        .pickImage(source: ImageSource.camera);
-                                    if (pickimg1 != null) {
-                                      final bytes = await File(pickimg1.path)
-                                          .readAsBytes();
-                                      setState(() {
-                                        imgpath = bytes;
-                                        Navigator.pop(context);
-                                      });
-                                    }
-                                  },
-                                  child: Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      const Icon(Icons.camera),
-                                      const SizedBox(width: 20),
-                                      Text(
-                                        "Camera",
-                                        style: Styles.TextStyle16,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 30),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final pickimg1 = await ImagePicker()
-                                        .pickImage(source: ImageSource.gallery);
-                                    if (pickimg1 != null) {
-                                      final bytes = await File(pickimg1.path)
-                                          .readAsBytes();
-                                      setState(() {
-                                        imgpath = bytes;
-                                        Navigator.pop(context);
-                                      });
-                                    }
-                                  },
-                                  child: Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      const Icon(Icons.browse_gallery_outlined),
-                                      const SizedBox(width: 20),
-                                      Text("Gallery",
-                                          style: Styles.TextStyle16),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.add_a_photo,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            CustomTextFormField(
-              controller1: namecontroller,
-              hinttext: 'Enter Your  Name',
-              text_Field_Icon: const Icon(Icons.person, color: Colors.white),
-            ),
-            CustomTextFormField(
-              controller1: tiltecontroller,
-              hinttext: 'Enter Your  title',
-              text_Field_Icon: const Icon(Icons.person, color: Colors.white),
-            ),
-            CustomTextFormField(
-              controller1: emailcontroller,
-              hinttext: 'Enter Your Mail',
-              text_Field_Icon: const Icon(Icons.mail, color: Colors.white),
-            ),
-            CustomTextFormField(
-              controller1: passwordcontroller,
-              hinttext: 'Enter Strong  Password',
-              text_Field_Icon:
-                  const Icon(Icons.visibility, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  isloading = true;
-                });
-                try {
-                  String imageUrl = "";
-                  if (imgpath != null) {
-                    // Upload image to Firebase Storage
-                    final storageRef = FirebaseStorage.instance
-                        .ref()
-                        .child('user_images/${emailcontroller.text}.jpg');
-                    await storageRef.putData(imgpath!);
-                    imageUrl = await storageRef.getDownloadURL();
-                  }
+    );
+  }
 
-                  await Auth().register(
-                    emaill: emailcontroller.text,
-                    passwordd: passwordcontroller.text,
-                    name: namecontroller.text,
-                    title: tiltecontroller.text,
-                    imagename: imgname,
-                    profileImage: imgpath,
-                  );
+  Widget Have() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            "Don you have account?  ",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          GestureDetector(
+            onTap: widget.show,
+            child: Text(
+              "Login ",
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomepView(),
-                    ),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    backgroundColor: Colors.pink,
-                    content: Text("Signed up successfully 🥳"),
-                  ));
-                } catch (ex) {
-                  print(ex.toString());
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const AlertDialog(
-                        content: Text("Error 😔, Try again"),
-                      );
-                    },
-                  );
-                } finally {
-                  setState(() {
-                    isloading = false;
-                  });
-                }
-              },
-              child: Text(
-                isloading ? "Loading" : "Register",
-                style: Styles.TextStyle16.copyWith(color: Colors.white),
-              ),
-              style: const ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(Colors.pink),
+  Widget Signup() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: InkWell(
+        onTap: () async {
+          try {
+            await Authentication().Signup(
+              email: email.text,
+              password: password.text,
+              passwordConfirme: passwordConfirme.text,
+              username: username.text,
+              bio: bio.text,
+              profile: _imageFile ?? File(''),
+            );
+          } on exceptions catch (e) {
+            dialogBuilder(context, e.message);
+          }
+        },
+        child: Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'Sign up',
+            style: TextStyle(
+              fontSize: 23,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding Textfild(TextEditingController controll, FocusNode focusNode,
+      String typename, IconData icon) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: TextField(
+          style: TextStyle(fontSize: 18, color: Colors.black),
+          controller: controll,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            hintText: typename,
+            prefixIcon: Icon(
+              icon,
+              color: focusNode.hasFocus ? Colors.black : Colors.grey[600],
+            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                width: 2,
+                color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const LoginView()));
-              },
-              child: Text(
-                " Have an account ? Login Now 👉",
-                style: Styles.TextStyle14.copyWith(color: Colors.white),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(
+                width: 2,
+                color: Colors.black,
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
